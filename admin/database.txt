@@ -1,0 +1,202 @@
+CREATE TABLE guest(
+  guest_ID INT(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  fname VARCHAR(50) NOT NULL,
+  lname VARCHAR(50) NOT NULL,
+  gender CHAR(5) NOT NULL,
+  address VARCHAR(50) NOT NULL,
+  city VARCHAR(50) NOT NULL,
+  state VARCHAR(50) NOT NULL,
+  country VARCHAR(50) NOT NULL,
+  postalCode CHAR(6) NOT NULL,
+  phone CHAR(10) NOT NULL,
+  identification VARCHAR(50) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  FULLTEXT(fname,lname),
+  INDEX(gender(1)),
+  INDEX(address(20)),
+  INDEX(city(20)),
+  INDEX(email(20))
+)ENGINE INNODB;
+
+CREATE TABLE roomTypes(
+  roomType_ID TINYINT(1) NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(12) NOT NULL,
+  description TEXT(250),
+  active boolean NOT NULL,
+  price DECIMAL(15,2) NOT NULL,
+  max_adults TINYINT(1) NOT NULL,
+  max_children TINYINT(1) NOT NULL,
+  extra  TINYINT(1) NOT NULL,
+  FULLTEXT(description)
+)ENGINE INNODB;
+
+CREATE TABLE roomStatus(
+  status_ID TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  rm_Status VARCHAR(20) NOT NULL,
+  INDEX(rm_Status(1))
+)ENGINE INNODB;
+
+CREATE TABLE rooms(
+  room_id INT(2) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  roomType_ID TINYINT(1) NOT NULL,
+  active TINYINT(1) UNSIGNED NOT NULL,
+  access BOOLEAN NOT NULL,
+  status_ID TINYINT(1) UNSIGNED NOT NULL,
+  FOREIGN KEY (roomType_ID) REFERENCES roomTypes(roomType_ID),
+  FOREIGN KEY (status_ID) REFERENCES roomStatus(status_ID)
+)ENGINE INNODB;
+
+CREATE TABLE serviceCategory(
+  cat_ID INT(3) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  category VARCHAR(15) NOT NULL,
+  active boolean NOT NULL,
+  INDEX(category(5))
+)ENGINE INNODB;
+
+CREATE TABLE services(
+  serv_id int(4) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(15) NOT NULL,
+  price DECIMAL(15,2) NOT NULL,
+  type VARCHAR(15) NOT NULL,
+  cat_ID INT(3) UNSIGNED ZEROFILL NOT NULL,
+  FULLTEXT(name, type),
+  FOREIGN KEY (cat_ID) REFERENCES serviceCategory(cat_ID)
+)ENGINE INNODB;
+
+CREATE TABLE paymentTypes(
+  paymentType_ID TINYINT(1) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  paymentType VARCHAR(10) NOT NULL,
+  active BOOLEAN NOT NULL
+)ENGINE INNODB;
+
+CREATE TABLE employees(
+  empl_ID INT(5) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  dept VARCHAR(15) NOT NULL,
+  gender CHAR(5) NOT NULL,
+  salary DECIMAL(17,2) NOT NULL,
+  INDEX(gender(1)),
+  INDEX(dept(4))
+)ENGINE INNODB;
+
+CREATE TABLE employeeInfo(
+  empl_ID INT(5) UNSIGNED ZEROFILL NOT NULL,
+  fname VARCHAR(50) NOT NULL,
+  lname VARCHAR(50) NOT NULL,
+  gender CHAR(5) NOT NULL,
+  address VARCHAR(50) NOT NULL,
+  city VARCHAR(50) NOT NULL,
+  state VARCHAR(50) NOT NULL,
+  country VARCHAR(50) NOT NULL,
+  postalCode CHAR(6) NOT NULL,
+  phone CHAR(10) NOT NULL,
+  identification VARCHAR(50) NOT NULL,
+  sin VARCHAR(9) NOT NULL,
+  email VARCHAR(50) NOT NULL,
+  FULLTEXT(fname,lname),
+  INDEX(gender(1)),
+  INDEX(address(20)),
+  INDEX(city(20)),
+  INDEX(email(20)),
+  FOREIGN KEY (empl_ID) REFERENCES employees(empl_ID)
+)ENGINE INNODB;
+
+CREATE TABLE users(
+  user_ID INT(5) UNSIGNED ZEROFILL NOT NULL,
+  username VARCHAR(20) NOT NULL,
+  pass VARCHAR(20) NOT NULL,
+  type VARCHAR(15) NOT NULL,
+  FOREIGN KEY (user_ID) REFERENCES employees(empl_ID),
+  FOREIGN KEY (user_ID) REFERENCES guest(guest_ID)
+)ENGINE INNODB;
+
+CREATE TABLE reservations(
+  guest_ID INT(10) UNSIGNED ZEROFILL NOT NULL,
+  room_ID INT(2) UNSIGNED ZEROFILL NOT NULL,
+  reservationCode INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  checkin DATE NOT NULL,
+  checkout DATE NOT NULL,
+  numNights TINYINT(1) UNSIGNED NOT NULL,
+  bedding VARCHAR(6) NOT NULL,
+  adults TINYINT(1) UNSIGNED NOT NULL,
+  children TINYINT(1) UNSIGNED NOT NULL,
+  empl_ID INT(5) UNSIGNED ZEROFILL NOT NULL,
+  FOREIGN KEY (empl_ID) REFERENCES employees(empl_ID),
+  FOREIGN KEY (guest_ID) REFERENCES guest(guest_ID),
+  FOREIGN KEY (room_ID) REFERENCES rooms(room_ID),
+  INDEX(checkin),
+  INDEX(checkout),
+  INDEX(bedding(2))
+)ENGINE INNODB;
+
+CREATE TABLE events(
+  event_ID INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  guest_ID INT(10) UNSIGNED ZEROFILL NOT NULL,
+  type VARCHAR(10) NOT NULL,
+  occupancy INT(4) UNSIGNED NOT NULL,
+  event_date DATE NOT NULL,
+  INDEX(event_date),
+  FOREIGN KEY (guest_ID) REFERENCES guest(guest_ID)
+)ENGINE INNODB;
+
+CREATE TABLE payments(
+  payment_ID INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  reservationCode INT(10) UNSIGNED ZEROFILL NOT NULL,
+  paymentType_ID TINYINT(1) UNSIGNED NOT NULL,
+  amount DECIMAL(15,2) NOT NULL,
+  FOREIGN KEY (reservationCode) REFERENCES reservations(reservationCode),
+  FOREIGN KEY (paymentType_ID) REFERENCES paymentTypes(paymentType_ID)
+)ENGINE INNODB;
+
+CREATE TABLE guestCreditInfo(
+  guest_ID INT(10) UNSIGNED ZEROFILL NOT NULL,
+  paymentType_ID TINYINT(1) UNSIGNED NOT NULL,
+  credit_num INT(20) UNSIGNED NOT NULL,
+  active boolean NOT NULL,
+  FOREIGN KEY (paymentType_ID) REFERENCES paymentTypes(paymentType_ID),
+  FOREIGN KEY (guest_ID) REFERENCES guest(guest_ID)
+)ENGINE INNODB;
+
+CREATE TABLE charges(
+  charge_ID INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  reservationCode INT(10) UNSIGNED ZEROFILL NOT NULL,
+  chargeType_ID INT(4) UNSIGNED ZEROFILL NOT NULL,
+  unit_cost DECIMAL(15,2) NOT NULL,
+  total_charges DECIMAL(5,2) NOT NULL,
+  FOREIGN KEY (chargeType_ID) REFERENCES services(serv_ID)
+)ENGINE INNODB;
+
+CREATE TABLE bills(
+  invoice_ID INT(10) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  reservationCode INT(10) UNSIGNED ZEROFILL NOT NULL,
+  guest_ID INT(10) UNSIGNED ZEROFILL NOT NULL,
+  invoice_Date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  payments DECIMAL(15,2) NOT NULL,
+  charges DECIMAL(15,2) NOT NULL,
+  tax DECIMAL(2,2) NULL DEFAULT '0.13',
+  empl_ID INT(5) UNSIGNED ZEROFILL NOT NULL,
+  FOREIGN KEY (empl_ID) REFERENCES employees(empl_ID),
+  FOREIGN KEY (reservationCode) REFERENCES reservations(reservationCode),
+  FOREIGN KEY (guest_ID) REFERENCES guest(guest_ID)
+)ENGINE INNODB;
+
+CREATE TABLE jobTasks(
+  empl_ID INT(5) UNSIGNED ZEROFILL NOT NULL,
+  room_ID INT(2) UNSIGNED ZEROFILL NOT NULL,
+  taskCompleted Boolean NOT NULL,
+  FOREIGN KEY (empl_ID) REFERENCES employees(empl_ID),
+  FOREIGN KEY (room_ID) REFERENCES rooms(room_ID)
+)ENGINE INNODB;
+
+CREATE TABLE includedAmenities(
+  amenity_ID TINYINT(3) UNSIGNED ZEROFILL NOT NULL AUTO_INCREMENT PRIMARY KEY,
+  amenity_Name VARCHAR(50) NOT NULL,
+  INDEX(amenity_Name(10))
+)ENGINE INNODB;
+
+INSERT INTO roomstatus(rm_Status) VALUES('Available'),('Unavailable'),('Pending'),('Out of service');
+
+INSERT INTO includedamenities(amenity_Name) VALUES("Balcony"),("Cable TV"),
+("Complimentary 3-course meal"),("Dining Area"),("Dining Area/Small Kitchen Combo"),
+("Ensuite Bathroom With Shower"),("Ethernet"),("Fitness Centre"),("Free Wifi"),
+("Hair Dryer"),("Jacuzzi"),("Kitchen"),("Living Room"),("Pool"),("Pull Out Sofa"),
+("Safe"),("Spa"),("Toiletries"),("Towels"),("Underlit Beds");

@@ -1,0 +1,24 @@
+CREATE TABLE guest(
+    guest_ID TINYINT(4) NOT NULL AUTO_INCREMENT,
+    fname VARCHAR(50) NOT NULL,
+    lname VARCHAR(50) NOT NULL,
+    gender CHAR(5) NOT NULL,
+    address VARCHAR(50) NOT NULL,
+    city VARCHAR(50) NOT NULL,
+    state CHAR(2) NOT NULL,
+    country CHAR(2) NOT NULL,
+    postalCode CHAR(6) NOT NULL,
+    phone CHAR(10) NOT NULL,
+    identification VARCHAR(50) NOT NULL,
+    email VARCHAR(50) NOT NULL,
+    PRIMARY KEY(guest_id)
+)ENGINE INNODB;
+
+CREATE TABLE rooms(
+	room_id TINYINT(2) NOT NULL AUTO_INCREMENT,
+	status VARCHAR(14) NOT NULL,
+	accessible BOOLEAN NOT NULL,
+	type VARCHAR(12) NOT NULL,
+	PRIMARY KEY(room_id),
+	FOREIGN KEY type REFERENCES roomTypes(name)
+)ENGINE INNODB;

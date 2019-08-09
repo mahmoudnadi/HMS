@@ -1,0 +1,98 @@
+Balcony
+Cable TV
+Complimentary 3-course meal
+Dining Area
+Dining Area/Small Kitchen Combo
+Ensuite Bathroom with shower
+Ethernet
+Fitness Centre
+Free Wifi
+Hair Dryer
+Jacuzzi
+Kitchen
+Kitchen
+Living Room
+Pool
+Pull Out Sofa
+Safe
+Spa
+Toiletries
+Towels
+Underlit Beds
+
+SELECT rooms.room_id, roomtypes.name FROM rooms INNER JOIN roomtypes ON rooms.roomType_ID=roomtypes.roomType_ID;
+
+SELECT rooms.room_id AS "roomNum",
+roomtypes.name AS "roomType",
+roomtypes.max_adults AS "adults",
+roomtypes.max_children AS "children",
+roomtypes.extra AS "extra",
+roomtypes.price AS "price",
+rooms.active AS "active",
+rooms.access AS "accessibility",
+roomstatus.rm_Status AS "roomStatus"
+FROM rooms
+LEFT JOIN roomtypes ON roomtypes.roomType_ID = rooms.roomType_ID
+LEFT JOIN roomstatus ON roomstatus.status_ID = rooms.status_ID
+ORDER BY rooms.room_id
+
+
+
+
+
+
+
+
+
+
+
+
+result=json.parse(data);
+if(result.data == true){
+  $('#name').val(result.name);
+  $('#description').val(result.description);
+  $('#adults').val(result.max_adults);
+  $('#children').val(result.max_children);
+  $('#extra').val(result.extra);
+  $('#price').val(result.price);
+  $('#roomStatus').val(result.active).change();
+  $('#dbmessage').html("ERROR!");
+}
+else if (result.data == false){
+  $('#dbmessage').html("AJAX ERROR!");
+
+}
+
+<script>
+  function submitData(){
+    $('#roomInfo').css('display','unset');
+  }
+</script>
+
+<script>
+  if(isset($_POST['submit'])){
+    $('#roomInfo').css("display","unset");
+    $('#selection').on('change',function(){
+      var roomType_ID = $(this).val();
+      $.ajax({
+        method: "POST",
+        url: "getRoomType.php",
+        data:{roomType_ID : roomType_ID},
+        dataType:"json",
+        success: function(data){
+          alert(data);
+
+        }
+        error:function(){alert("ERROR");}
+      });
+    });
+  }
+
+CREATE TABLE IF NOT EXISTS presidentialamenities(
+id TINYINT(3) UNSIGNED NOT NULL AUTO_INCREMENT PRIMARY KEY,
+amenity_ID TINYINT(3) UNSIGNED ZEROFILL NOT NULL,
+FOREIGN KEY (amenity_ID) REFERENCES includedAmenities(amenity_ID) ON DELETE CASCADE ON UPDATE CASCADE
+)ENGINE INNODB
+INSERT INTO presidentialamenities(amenity_ID,amenity_Name) VALUES(001,Balcony),(002,Cable TV),(003,Complimentary 3-course meal),(004,Dining Area),(005,Dining Area/Small Kitchen Combo),(006,Ensuite Bathroom With Shower),(007,Ethernet),(008,Fitness Centre),(009,Free Wifi),(010,Hair Dryer),(011,Jacuzzi),(012,Kitchen),(013,Living Room),(014,Pool),(015,Pull Out Sofa),(016,Safe),(017,Spa),(018,Toiletries),(019,Towels),(020,Underlit Beds)
+
+INSERT INTO \'presidentialamenities(amenity_ID,amenity_Name) VALUES(001,Balcony),(002,Cable TV),(003,Complimentary 3-course meal),(004,Dining Area),(005,Dining Area/Small Kitchen Combo),(006,Ensuite Bathroom With Shower),(007,Ethernet),(008,Fitness Centre),(009,Free Wifi),(010,Hair Dryer),(011,Jacuzzi),(012,Kitchen),(013,Living Room),(014,Pool),(015,Pull Out Sofa),(016,Safe),(017,Spa),(018,Toiletries),(019,Towels),(020,Underlit Beds)
